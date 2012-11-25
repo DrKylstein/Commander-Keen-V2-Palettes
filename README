@@ -13,6 +13,6 @@ header to your patch file.
 For patchers/hackers: this patch is set up to assemble with JWASM and GNU Make 
 on Linux. The source files for the binaries are in patch/source. Build by 
 running `make` in the epsiode directory. If you add the files for Keen and V2 
-(making sure to use the included loader and not the original v2 one), 
+(making sure to use the included loader and not the original V2 one), 
 `make run` will launch Dosbox after building. `make-debug` will launch 
 "dosbox-debug" if you have built Dosbox with the debugger under that name.
