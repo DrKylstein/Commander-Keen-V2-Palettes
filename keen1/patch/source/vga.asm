@@ -36,9 +36,9 @@ LightsOn:
     call	Delay
     inc	sp
     inc	sp
-    call	VBlank
-    xor	cx, cx
-    call	set_color_page
+    ;call	VBlank
+    ;xor	cx, cx
+    ;call	set_color_page
     ret
     
     ORG	35B2h
@@ -49,9 +49,9 @@ LightsOff:
     call	Delay
     inc	sp
     inc	sp
-    call	VBlank
-    mov	cx, 1
-    call	set_color_page
+    ;call	VBlank
+    ;mov	cx, 1
+    ;call	set_color_page
     ret
 
 
@@ -68,7 +68,7 @@ novrt:
     jz	novrt
     ret
     
-set_color_page:	; cx = page
+set_color_page:	; cl = page
     mov	dx, port_input_stat
     in	al, dx
     mov	dx, port_attr_addr
@@ -76,7 +76,7 @@ set_color_page:	; cx = page
     push	ax
     mov	al, index_colorsel
     out	dx, al
-    mov	ax, cx
+    mov	al, cl
     out	dx, al
     pop	ax
     out	dx, al
@@ -157,27 +157,41 @@ color_left:
 lighten_colors endp
 
 load_colors proc near
+    ; mov ax, 1012h
+    ; xor bx, bx
+    ; mov cx, 256
+    ; push es
+    ; mov ax, ds
+    ; mov es, ax
+    ; mov dx, 0E800h
+    ; int 10h
+    ; pop es
     call VBlank
-    xor bx,bx
+    mov bx, 16*3
 	mov dx, dac_write_index
 	mov al,16
 	out dx, al
 	mov dx, dac_write_data
-    mov cx, 768 - (16 * 3)
 autoindex_loop:
 	mov al, palette[bx]
 	out dx, al
     inc bx
-    loop autoindex_loop
+    cmp bx, 768
+    jl autoindex_loop
     ret
 load_colors endp
 
 cycle_colors proc near
     call sync_drawing
-    inc cycle_count
     ;call VBlank
-    mov cx, cycle_count
-    and cx, 07h
+    ;inc word ptr cycle_count
+    mov ax, word ptr ticks
+    shr ax, 3
+    and ax, 7
+    mov cx, lights
+    xor cx, 1
+    shl cx, 3
+    add cx, ax
     call set_color_page
     ret
 cycle_colors endp
